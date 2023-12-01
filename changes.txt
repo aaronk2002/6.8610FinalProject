@@ -1,0 +1,16 @@
+model.py
+- Removed tensorboardX
+
+train.py
+- Removed tensorboardX
+- Removed saving model every epoch
+- result_metrics ?
+- Print result only at the end of epoch
+- TQDM bar
+- batch_size use config not hard-code
+- Print the config and CUDA or CPU
+- Removed single_mt
+- Save model, not model state dict
+
+data.py
+- allow batch to sample multiple times until getting long enough file
