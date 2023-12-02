@@ -1,9 +1,11 @@
 import os
 import numpy as np
-from deprecated.sequence import EventSeq, ControlSeq
+
+# from deprecated.sequence import EventSeq, ControlSeq
 import torch
 import torch.nn.functional as F
 import torchvision
+
 # from custom.config import config
 
 
@@ -16,33 +18,34 @@ def find_files_by_extensions(root, exts=[]):
             if name.endswith(ext):
                 return True
         return False
+
     for path, _, files in os.walk(root):
         for name in files:
             if _has_ext(name):
                 yield os.path.join(path, name)
 
 
-def event_indeces_to_midi_file(event_indeces, midi_file_name, velocity_scale=0.8):
-    event_seq = EventSeq.from_array(event_indeces)
-    note_seq = event_seq.to_note_seq()
-    for note in note_seq.notes:
-        note.velocity = int((note.velocity - 64) * velocity_scale + 64)
-    note_seq.to_midi_file(midi_file_name)
-    return len(note_seq.notes)
+# def event_indeces_to_midi_file(event_indeces, midi_file_name, velocity_scale=0.8):
+#     event_seq = EventSeq.from_array(event_indeces)
+#     note_seq = event_seq.to_note_seq()
+#     for note in note_seq.notes:
+#         note.velocity = int((note.velocity - 64) * velocity_scale + 64)
+#     note_seq.to_midi_file(midi_file_name)
+#     return len(note_seq.notes)
 
 
-def dict2params(d, f=','):
-    return f.join(f'{k}={v}' for k, v in d.items())
+def dict2params(d, f=","):
+    return f.join(f"{k}={v}" for k, v in d.items())
 
 
-def params2dict(p, f=',', e='='):
+def params2dict(p, f=",", e="="):
     d = {}
     for item in p.split(f):
         item = item.split(e)
         if len(item) < 2:
             continue
         k, *v = item
-        d[k] = eval('='.join(v))
+        d[k] = eval("=".join(v))
     return d
 
 
@@ -50,8 +53,8 @@ def compute_gradient_norm(parameters, norm_type=2):
     total_norm = 0
     for p in parameters:
         param_norm = p.grad.data.norm(norm_type)
-        total_norm += param_norm ** norm_type
-    total_norm = total_norm ** (1. / norm_type)
+        total_norm += param_norm**norm_type
+    total_norm = total_norm ** (1.0 / norm_type)
     return total_norm
 
 
@@ -72,7 +75,7 @@ def get_masked_with_pad_tensor(size, src, trg, pad_token):
         trg_pad_tensor = torch.ones_like(trg).to(trg.device.type) * pad_token
         dec_trg_mask = trg == trg_pad_tensor
         # boolean reversing i.e) True * -1 + 1 = False
-        seq_mask = ~sequence_mask(torch.arange(1, size+1).to(trg.device), size)
+        seq_mask = ~sequence_mask(torch.arange(1, size + 1).to(trg.device), size)
         # look_ahead_mask = torch.max(dec_trg_mask, seq_mask)
         look_ahead_mask = dec_trg_mask | seq_mask
 
@@ -150,11 +153,23 @@ def attention_image_summary(name, attn, step=0, writer=None):
     image = torch.pow(image, 0.2)  # for high-dynamic-range
     # Each head will correspond to one of RGB.
     # pad the heads to be a multiple of 3
-    image = F.pad(image, [0,  -num_heads % 3, 0, 0, 0, 0, 0, 0,])
+    image = F.pad(
+        image,
+        [
+            0,
+            -num_heads % 3,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        ],
+    )
     image = split_last_dimension(image, 3)
     image = image.max(dim=4).values
     grid_image = torchvision.utils.make_grid(image.permute(0, 3, 1, 2))
-    writer.add_image(name, grid_image, global_step=step, dataformats='CHW')
+    writer.add_image(name, grid_image, global_step=step, dataformats="CHW")
 
 
 def split_last_dimension(x, n):
@@ -176,7 +191,7 @@ def split_last_dimension(x, n):
 def subsequent_mask(size):
     "Mask out subsequent positions."
     attn_shape = (1, size, size)
-    subsequent_mask = np.triu(np.ones(attn_shape), k=1).astype('uint8')
+    subsequent_mask = np.triu(np.ones(attn_shape), k=1).astype("uint8")
     return torch.from_numpy(subsequent_mask) == 0
 
 
@@ -188,12 +203,10 @@ def sequence_mask(length, max_length=None):
     return x.unsqueeze(0) < length.unsqueeze(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    s = np.array([np.array([1, 2] * 50), np.array([1, 2, 3, 4] * 25)])
 
-    s = np.array([np.array([1, 2]*50),np.array([1, 2, 3, 4]*25)])
-
-    t = np.array([np.array([2, 3, 4, 5, 6]*20), np.array([1, 2, 3, 4, 5]*20)])
+    t = np.array([np.array([2, 3, 4, 5, 6] * 20), np.array([1, 2, 3, 4, 5] * 20)])
     print(t.shape)
 
     print(get_masked_with_pad_tensor(100, s, t))
-
