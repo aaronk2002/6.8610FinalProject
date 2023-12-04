@@ -1,5 +1,5 @@
 pickle_dir: 'dataset/processed'
-epochs: 100
+epochs: 1000
 batch_size: 8
 load_path:
 dropout: 0.1
