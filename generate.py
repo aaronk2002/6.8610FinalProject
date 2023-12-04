@@ -24,7 +24,8 @@ mt.test()
 if config.condition_file is not None:
     inputs = np.array([encode_midi("dataset/midi/BENABD10.mid")[:500]])
 else:
-    inputs = np.array([[24, 28, 31]])
+    initialize = torch.load("init_generate.pt")
+    inputs = np.array([initialize])
 inputs = torch.from_numpy(inputs).to(config.device)
 result = mt(inputs, config.length)
 
