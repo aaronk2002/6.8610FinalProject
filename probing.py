@@ -38,7 +38,6 @@ def probe_task(input_paths, model_path, label, M):
     max_seq = mt.max_seq
     num_layer = mt.num_layer
     emb_dim = mt.embedding_dim
-    N = len(input_paths)
 
     # Raw data and label
     raw_data = []
@@ -46,25 +45,30 @@ def probe_task(input_paths, model_path, label, M):
     for path in input_paths:
         with open(path, "rb") as f:
             data = pickle.load(f)
-            for _ in range(M):
-                idx = random.randint(0, len(data) - max_seq)
+            if len(data) < max_seq:
+                continue
+            for idx in range(min(M, len(data) - max_seq + 1)):
                 control = sum(data[idx : idx + max_seq])
                 raw_data.append(data[idx : idx + max_seq])
                 y.append(label[path.split("/")[-1]] + [control])
-    x = torch.Tensor(raw_data)
-    y = torch.Tensor(y)
+    x = torch.Tensor(raw_data).to(device)
+    y = torch.Tensor(y).to(device)
 
-    # Set up first steps for models
-    _, _, look_ahead_mask = utils.get_masked_with_pad_tensor(max_seq, x, x, pad_token)
-    x = mt.Decoder.embedding(x.to(torch.long))
-    x *= math.sqrt(emb_dim)
-    x = mt.Decoder.pos_encoding(x)
-
-    # Output per layer
-    X = torch.zeros((num_layer, N * M, emb_dim))
-    for idx in range(num_layer):
-        x, _ = mt.Decoder.enc_layers[idx](x, look_ahead_mask)
-        X[idx] = x.mean(dim=1).detach()
+    # Calculate outputs for every decoder layer
+    X = torch.zeros((num_layer, len(x), emb_dim))
+    for idx in range(len(x)):
+        curr_x = x[idx : idx + 1]
+        # Set up first steps for models
+        _, _, look_ahead_mask = utils.get_masked_with_pad_tensor(
+            max_seq, curr_x, curr_x, pad_token
+        )
+        curr_x = mt.Decoder.embedding(curr_x.to(torch.long))
+        curr_x *= math.sqrt(emb_dim)
+        curr_x = mt.Decoder.pos_encoding(curr_x)
+        # Output per layer
+        for jdx in range(num_layer):
+            curr_x, _ = mt.Decoder.enc_layers[jdx](curr_x, look_ahead_mask)
+            X[jdx, idx : idx + 1] = curr_x.mean(dim=1).detach()
 
     return X, y
 
@@ -166,14 +170,18 @@ if __name__ == "__main__":
 
     # Processing paths
     dataset = Data("dataset/processed")
-    train_path = [file.split("\\")[-1] for file in dataset.file_dict["train"]]
+    train_path = [
+        file.split("\\")[-1].split("/")[-1] for file in dataset.file_dict["train"]
+    ]
     train_path = ["dataset/processed/" + file for file in train_path if file in label]
-    eval_path = [file.split("\\")[-1] for file in dataset.file_dict["eval"]]
+    eval_path = [
+        file.split("\\")[-1].split("/")[-1] for file in dataset.file_dict["eval"]
+    ]
     eval_path = ["dataset/processed/" + file for file in eval_path if file in label]
 
     # Get probe datasets
-    train_x, train_y = probe_task(train_path, args.model, label, 1)
-    eval_x, eval_y = probe_task(eval_path, args.model, label, 1)
+    train_x, train_y = probe_task(train_path[:10], args.model, label, 1)
+    eval_x, eval_y = probe_task(eval_path[:10], args.model, label, 1)
     torch.save(
         {"train_x": train_x, "train_y": train_y, "eval_x": eval_x, "eval_y": eval_y},
         args.save,

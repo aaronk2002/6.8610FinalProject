@@ -9,8 +9,14 @@ import random
 # ) as f:
 #     data = pickle.load(f)
 
-data = []
-for _ in range(100_000):
-    data.append(random.randint(0, 387))
+# data = []
+# for _ in range(100_000):
+#     data.append(random.randint(0, 387))
 
-decode_midi(data, file_path="test.mid")
+# decode_midi(data, file_path="test.mid")
+
+result = torch.load("dataset/4-layers-probe.pth", map_location=torch.device("cpu"))
+print(result["train_x"].shape)
+print(result["train_y"].shape)
+print(result["eval_x"].shape)
+print(result["eval_y"].shape)
