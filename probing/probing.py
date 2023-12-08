@@ -1,11 +1,17 @@
 import torch
 import pickle
+import sys
+
+# setting path
+sys.path.append("..")
+
 import utils
 import math
 import random
 import pandas as pd
 from data import Data
 import argparse
+from tqdm import tqdm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 pad_token = 388
@@ -48,7 +54,7 @@ def probe_task(input_paths, model_path, label, M):
             if len(data) < max_seq:
                 continue
             for idx in range(min(M, len(data) - max_seq + 1)):
-                control = sum(data[idx : idx + max_seq])
+                control = sum(data[idx : idx + max_seq]) / (max_seq * pad_token)
                 raw_data.append(data[idx : idx + max_seq])
                 y.append(label[path.split("/")[-1]] + [control])
     x = torch.Tensor(raw_data).to(device)
@@ -90,18 +96,15 @@ def probe_classifier(X, y, num_classes, lr, epochs):
     """
     # Initialization
     num_model, N, d = X.shape
-    models = [
-        torch.nn.Sequential(torch.nn.Linear(d, num_classes), torch.nn.LogSoftmax(dim=1))
-        for _ in range(num_model)
-    ]
-    loss_fn = torch.nn.NLLLoss()
+    models = [torch.nn.Linear(d, num_classes) for _ in range(num_model)]
+    loss_fn = torch.nn.CrossEntropyLoss()
 
-    # Train N models
-    for idx in range(N):
+    # Train num_model models
+    for idx in range(num_model):
         model = models[idx]
         optimizer = torch.optim.SGD(model.parameters(), lr=lr)
         model.train()
-        for _ in range(epochs):
+        for _ in tqdm(range(epochs)):
             logits = model(X[idx])
             loss = loss_fn(logits, y)
             loss.backward()
@@ -126,12 +129,12 @@ def probe_regressor(X, y, lr, epochs):
     models = [torch.nn.Linear(d, 1) for _ in range(num_model)]
     loss_fn = torch.nn.MSELoss()
 
-    # Train N models
-    for idx in range(N):
+    # Train num_model models
+    for idx in range(num_model):
         model = models[idx]
         optimizer = torch.optim.SGD(model.parameters(), lr=lr)
         model.train()
-        for _ in range(epochs):
+        for _ in tqdm(range(epochs)):
             pred = model(X[idx])
             optimizer.zero_grad()
             loss = loss_fn(pred.reshape(-1), y)

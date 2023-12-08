@@ -16,7 +16,4 @@ import random
 # decode_midi(data, file_path="test.mid")
 
 result = torch.load("dataset/4-layers-probe.pth", map_location=torch.device("cpu"))
-print(result["train_x"].shape)
-print(result["train_y"].shape)
-print(result["eval_x"].shape)
-print(result["eval_y"].shape)
+print(result["train_y"])
