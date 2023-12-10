@@ -41,6 +41,8 @@ if control == "key":
         len(key_to_idx),
         LR,
         EPOCHS,
+        LR,
+        EPOCHS,
     )
     torch.save(key_model, KEY_PATH)
 elif control == "composer":
@@ -48,6 +50,8 @@ elif control == "composer":
         result["train_x"],
         result["train_y"][:, 0].to(torch.long),
         len(composer_to_idx),
+        LR,
+        EPOCHS,
         LR,
         EPOCHS,
     )
