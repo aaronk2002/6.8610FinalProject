@@ -1,7 +1,7 @@
 import torch
 import pandas as pd
 import argparse
-from probing import probe_classifier, probe_regressor
+from probing import probe_classifier
 
 # Dataframe
 df = pd.read_csv("../dataset/maestro_new.csv")
@@ -38,7 +38,7 @@ if task == "key":
         LR,
         EPOCHS,
     )
-    torch.save(key_model, f"key-{num_layers}.pth")
+    mdl = key_model
 elif task == "composer":
     composer_model = probe_classifier(
         result["train_x"],
@@ -47,7 +47,7 @@ elif task == "composer":
         LR,
         EPOCHS,
     )
-    torch.save(composer_model, f"composer-{num_layers}.pth")
+    mdl = composer_model
 elif task == "control":
     control_model = probe_classifier(
         result["train_x"],
@@ -56,4 +56,6 @@ elif task == "control":
         LR,
         EPOCHS,
     )
-    torch.save(control_model, f"control-{num_layers}.pth")
+    mdl = control_model
+path = f"{task}-{num_layers}-{LR}-{EPOCHS}.pth"
+torch.save(mdl, path)
