@@ -15,5 +15,5 @@ import random
 
 # decode_midi(data, file_path="test.mid")
 
-result = torch.load("dataset/4-layers-probe.pth", map_location=torch.device("cpu"))
-print(result["eval_y"][:, 2].mean())
+result = torch.load("dataset/8-layers-probe.pth", map_location=torch.device("cpu"))
+print(result["eval_y"])

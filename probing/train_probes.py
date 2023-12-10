@@ -59,7 +59,7 @@ elif control == "composer":
 elif control == "control":
     control_model = probe_classifier(
         result["train_x"],
-        result["train_y"][:, 2],
+        result["train_y"][:, 2].to(torch.long),
         2,
         LR,
         EPOCHS,
