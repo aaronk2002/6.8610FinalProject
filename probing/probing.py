@@ -46,7 +46,7 @@ def probe_task(input_paths, model_path, label, M):
     emb_dim = mt.embedding_dim
 
     # Random number for control
-    rand = torch.bernoulli([0.5 for _ in range(pad_token + 1)])
+    rand = torch.bernoulli(torch.Tensor([0.5 for _ in range(pad_token + 1)]))
 
     # Raw data and label
     raw_data = []
