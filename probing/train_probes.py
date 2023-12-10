@@ -44,7 +44,7 @@ if control == "key":
         LR,
         EPOCHS,
     )
-    torch.save(key_model, KEY_PATH)
+    torch.save(key_model, f"key-{num_layers}.pth")
 elif control == "composer":
     composer_model = probe_classifier(
         result["train_x"],
@@ -55,7 +55,7 @@ elif control == "composer":
         LR,
         EPOCHS,
     )
-    torch.save(composer_model, COMPOSER_PATH)
+    torch.save(composer_model, f"composer-{num_layers}.pth")
 elif control == "control":
     control_model = probe_classifier(
         result["train_x"],
@@ -64,4 +64,4 @@ elif control == "control":
         LR,
         EPOCHS,
     )
-    torch.save(control_model, CONTROL_PATH)
+    torch.save(control_model, f"control-{num_layers}.pth")
