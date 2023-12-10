@@ -57,12 +57,6 @@ if __name__ == "__main__":
     parser.add_argument("--task", help="type of task: control, key, composer", type=str)
     args = parser.parse_args()
 
-    def regression_loss(y_1, y_2):
-        mse = torch.nn.MSELoss()(y_1.view(-1), y_2).item()
-        y_2_mean = torch.mean(y_2)
-        r_squared = 1 - mse / torch.mean((y_2 - y_2_mean) * (y_2 - y_2_mean))
-        return {"Mean Squared Error": mse, "R^2": r_squared}
-
     def classification_loss(y_1, y_2):
         cell = torch.nn.CrossEntropyLoss()(y_1, y_2)
         acc = sum(torch.argmax(y_1, dim=1) == y_2) / len(y_2)
@@ -72,6 +66,6 @@ if __name__ == "__main__":
         evaluate_probes(
             args.layers,
             args.task,
-            regression_loss if args.task == "control" else classification_loss,
+            classification_loss,
         )
     )
