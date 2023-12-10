@@ -3,12 +3,6 @@ import pandas as pd
 import argparse
 from probing import probe_classifier, probe_regressor
 
-### GLOABL VARIABLES ###
-CONTROL_PATH = "control.pth"
-COMPOSER_PATH = "composer.pth"
-KEY_PATH = "key.pth"
-LR = 0.1
-EPOCHS = 100000
 # Dataframe
 df = pd.read_csv("../dataset/maestro_new.csv")
 
@@ -16,10 +10,12 @@ df = pd.read_csv("../dataset/maestro_new.csv")
 parser = argparse.ArgumentParser()
 parser.add_argument("--num_layers", help="number of decoder layers", type=str)
 parser.add_argument("--task", help="Task type (key, composer, control)", type=str)
+parser.add_argument("--lr", help = "Learning rate")
+parser.add_argument("--epochs", help = 'Epochs')
 args = parser.parse_args()
-control, num_layers = args.task, args.num_layers
-
-print(f"num_layers = {num_layers} control = {control} ")
+task, num_layers = args.task, args.num_layers
+EPOCHS, LR = args.epochs, args.lr
+print(f"num_layers = {num_layers} task = {task} ")
 
 # Label to idx
 key_to_idx = {"major": 1, "minor": 0}
@@ -34,7 +30,7 @@ result = torch.load(
 )
 
 # Train models
-if control == "key":
+if task == "key":
     key_model = probe_classifier(
         result["train_x"],
         result["train_y"][:, 1].to(torch.long),
@@ -43,7 +39,7 @@ if control == "key":
         EPOCHS,
     )
     torch.save(key_model, f"key-{num_layers}.pth")
-elif control == "composer":
+elif task == "composer":
     composer_model = probe_classifier(
         result["train_x"],
         result["train_y"][:, 0].to(torch.long),
@@ -52,7 +48,7 @@ elif control == "composer":
         EPOCHS,
     )
     torch.save(composer_model, f"composer-{num_layers}.pth")
-elif control == "control":
+elif task == "control":
     control_model = probe_classifier(
         result["train_x"],
         result["train_y"][:, 2].to(torch.long),
