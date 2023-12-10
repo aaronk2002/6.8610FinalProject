@@ -14,7 +14,7 @@ parser.add_argument("--lr", help = "Learning rate")
 parser.add_argument("--epochs", help = 'Epochs')
 args = parser.parse_args()
 task, num_layers = args.task, args.num_layers
-EPOCHS, LR = args.epochs, args.lr
+EPOCHS, LR = int(args.epochs), float(args.lr)
 print(f"num_layers = {num_layers} task = {task} ")
 
 # Label to idx
