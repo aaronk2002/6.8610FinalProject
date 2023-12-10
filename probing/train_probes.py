@@ -40,7 +40,7 @@ if control == 'key':
         LR,
         EPOCHS,
     )
-    torch.save(key_model, KEY_PATH)
+    mdl, path = key_model, KEY_PATH
 elif control == 'composer':
     composer_model = probe_classifier(
         result['train_x'],
@@ -49,7 +49,7 @@ elif control == 'composer':
         LR,
         EPOCHS,
     )
-    torch.save(composer_model, COMPOSER_PATH)
+    mdl, path = composer_model, COMPOSER_PATH
 elif control == 'control':
     control_model = probe_regressor(
         result['train_x'],
@@ -57,4 +57,7 @@ elif control == 'control':
         LR,
         EPOCHS,
     )
-    torch.save(control_model, CONTROL_PATH)
+    mdl, path = control_model, CONTROL_PATH
+
+# save model
+torch.save(mdl, path)
