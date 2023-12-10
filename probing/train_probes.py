@@ -45,7 +45,7 @@ for idx in [4, 6, 8]:
     print("Control Model")
     control_models[idx] = probe_regressor(
         results[idx]["train_x"],
-        results[idx]["train_y"][:, 0],
+        results[idx]["train_y"][:, 2],
         0.1,
         100000,
     )

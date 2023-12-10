@@ -45,6 +45,9 @@ def probe_task(input_paths, model_path, label, M):
     num_layer = mt.num_layer
     emb_dim = mt.embedding_dim
 
+    # Random number for control
+    rand = torch.rand(pad_token + 1) * 2
+
     # Raw data and label
     raw_data = []
     y = []
@@ -54,7 +57,10 @@ def probe_task(input_paths, model_path, label, M):
             if len(data) < max_seq:
                 continue
             for idx in range(min(M, len(data) - max_seq + 1)):
-                control = sum(data[idx : idx + max_seq]) / (max_seq * pad_token)
+                control = (
+                    sum([rand[num].item() for num in data[idx : idx + max_seq]])
+                    / max_seq
+                )
                 raw_data.append(data[idx : idx + max_seq])
                 y.append(label[path.split("/")[-1]] + [control])
     x = torch.Tensor(raw_data).to(device)
@@ -102,7 +108,7 @@ def probe_classifier(X, y, num_classes, lr, epochs):
     # Train num_model models
     for idx in range(num_model):
         model = models[idx]
-        optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
         model.train()
         for _ in tqdm(range(epochs)):
             logits = model(X[idx])
@@ -132,60 +138,21 @@ def probe_regressor(X, y, lr, epochs):
     # Train num_model models
     for idx in range(num_model):
         model = models[idx]
-        optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
         model.train()
         for _ in tqdm(range(epochs)):
             pred = model(X[idx])
             optimizer.zero_grad()
             loss = loss_fn(pred.reshape(-1), y)
+            if idx == 2:
+                print(loss)
             loss.backward()
             optimizer.step()
     return models
 
 
 if __name__ == "__main__":
-    # Arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model", help="model path", type=str)
-    parser.add_argument("--save", help="saving path", type=str)
-    args = parser.parse_args()
-    print(f"model = {args.model}, save = {args.save}")
-
-    # Dataframe
-    df = pd.read_csv("dataset/maestro_new.csv")
-
-    # Label to idx
-    key_to_idx = {"major": 1, "minor": 0}
-    composers = df["canonical_composer"].unique()
-    composers = [composer for composer in composers if "/" not in composer]
-    composers.sort()
-    composer_to_idx = {composer: idx for idx, composer in enumerate(composers)}
-
-    # File to label
-    label = {}
-    for idx, row in df.iterrows():
-        if "/" in row["canonical_composer"]:
-            continue
-        label[row["midi_filename"][5:] + ".pickle"] = [
-            composer_to_idx[row["canonical_composer"]],
-            key_to_idx[row["key_mode"]],
-        ]
-
-    # Processing paths
-    dataset = Data("dataset/processed")
-    train_path = [
-        file.split("\\")[-1].split("/")[-1] for file in dataset.file_dict["train"]
-    ]
-    train_path = ["dataset/processed/" + file for file in train_path if file in label]
-    eval_path = [
-        file.split("\\")[-1].split("/")[-1] for file in dataset.file_dict["eval"]
-    ]
-    eval_path = ["dataset/processed/" + file for file in eval_path if file in label]
-
-    # Get probe datasets
-    train_x, train_y = probe_task(train_path[:10], args.model, label, 1)
-    eval_x, eval_y = probe_task(eval_path[:10], args.model, label, 1)
-    torch.save(
-        {"train_x": train_x, "train_y": train_y, "eval_x": eval_x, "eval_y": eval_y},
-        args.save,
+    result = torch.load(
+        f"../dataset/4-layers-probe.pth", map_location=torch.device("cpu")
     )
+    probe_regressor(result["train_x"], result["train_y"][:, 2], 0.1, 10000)
