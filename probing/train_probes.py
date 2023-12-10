@@ -15,9 +15,9 @@ df = pd.read_csv("../dataset/maestro_new.csv")
 ### GET ARGUMENTS ###
 parser = argparse.ArgumentParser()
 parser.add_argument("--num_layers", help="number of decoder layers", type=str)
-parser.add_argument("--control", help="Control type (key, composer, control)", type=str)
+parser.add_argument("--task", help="Task type (key, composer, control)", type=str)
 args = parser.parse_args()
-control, num_layers = args.control, args.num_layers
+control, num_layers = args.task, args.num_layers
 
 print(f"num_layers = {num_layers} control = {control} ")
 
@@ -30,7 +30,7 @@ composer_to_idx = {composer: idx for idx, composer in enumerate(composers)}
 
 # Get dataset with `num_layers` layers
 result = torch.load(
-    "f../dataset/{num_layers}-layers-probe.pth", map_location=torch.device("cpu")
+    f"../dataset/{num_layers}-layers-probe.pth", map_location=torch.device("cpu")
 )
 
 # Train models
@@ -41,8 +41,6 @@ if control == "key":
         len(key_to_idx),
         LR,
         EPOCHS,
-        LR,
-        EPOCHS,
     )
     torch.save(key_model, f"key-{num_layers}.pth")
 elif control == "composer":
@@ -50,8 +48,6 @@ elif control == "composer":
         result["train_x"],
         result["train_y"][:, 0].to(torch.long),
         len(composer_to_idx),
-        LR,
-        EPOCHS,
         LR,
         EPOCHS,
     )
