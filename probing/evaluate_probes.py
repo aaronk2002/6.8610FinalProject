@@ -2,16 +2,19 @@ import torch
 import argparse
 
 
-def evaluate_probes(num_layers, task_type, loss_fn):
+def evaluate_probes(num_layers, task_type, loss_fn, lr, epochs):
     """
     Given the model and dataset paths, and the loss function, evaluate
-    the training and evaluation losses for each models at each layer
+    the training and evaluation losses for each models at each layer for
+    the setting with learning rate lr and epochs number of epochs
 
     Input:
     - num_layers    : number of layers in transformer models
     - task_type     : type of task to evaluate
     - loss_fn       : the loss function to evaluate how well the model
                       performs
+    - lr            : learning rate
+    - epochs        : number of epochs
 
     Return:
     Two lists of losses for each train and eval sets, each loss corresponding
@@ -19,7 +22,9 @@ def evaluate_probes(num_layers, task_type, loss_fn):
     """
     # Get model and dataset
     task_to_idx = {"composer": 0, "key": 1, "control": 2}
-    models = torch.load(f"{task_type}.pth", map_location=torch.device("cpu"))
+    model = torch.load(
+        f"{task_type}-{num_layers}-{lr}-{epochs}.pth", map_location=torch.device("cpu")
+    )
     dataset = torch.load(
         f"../dataset/{num_layers}-layers-probe.pth", map_location=torch.device("cpu")
     )
@@ -32,7 +37,6 @@ def evaluate_probes(num_layers, task_type, loss_fn):
     if task_type != "control":
         train_y = train_y.to(torch.long)
         eval_y = eval_y.to(torch.long)
-    model = models[num_layers]
 
     # Prediction
     train_y_pred = []
@@ -55,6 +59,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--layers", help="number of layers", type=int)
     parser.add_argument("--task", help="type of task: control, key, composer", type=str)
+    parser.add_argument("--lr", help="learning rate", type=str)
+    parser.add_argument("--epochs", help="number of epochs", type=str)
     args = parser.parse_args()
 
     def classification_loss(y_1, y_2):
@@ -64,8 +70,6 @@ if __name__ == "__main__":
 
     print(
         evaluate_probes(
-            args.layers,
-            args.task,
-            classification_loss,
+            args.layers, args.task, classification_loss, args.lr, args.epochs
         )
     )
