@@ -46,7 +46,7 @@ def probe_task(input_paths, model_path, label, M):
     emb_dim = mt.embedding_dim
 
     # Random number for control
-    rand = torch.rand(pad_token + 1) * 2
+    rand = torch.bernoulli([0.5 for _ in range(pad_token + 1)])
 
     # Raw data and label
     raw_data = []
@@ -59,8 +59,9 @@ def probe_task(input_paths, model_path, label, M):
             for idx in range(min(M, len(data) - max_seq + 1)):
                 control = (
                     sum([rand[num].item() for num in data[idx : idx + max_seq]])
-                    / max_seq
+                    > max_seq / 2
                 )
+                control = 1 if control else 0
                 raw_data.append(data[idx : idx + max_seq])
                 y.append(label[path.split("/")[-1]] + [control])
     x = torch.Tensor(raw_data).to(device)
