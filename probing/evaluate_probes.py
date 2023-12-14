@@ -34,9 +34,8 @@ def evaluate_probes(num_layers, task_type, loss_fn, lr, epochs):
         dataset["eval_x"],
         dataset["eval_y"][:, task_to_idx[task_type]],
     )
-    if task_type != "control":
-        train_y = train_y.to(torch.long)
-        eval_y = eval_y.to(torch.long)
+    train_y = train_y.to(torch.long)
+    eval_y = eval_y.to(torch.long)
 
     # Prediction
     train_y_pred = []
@@ -59,8 +58,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--layers", help="number of layers", type=int)
     parser.add_argument("--task", help="type of task: control, key, composer", type=str)
-    parser.add_argument("--lr", help="learning rate", type=str)
-    parser.add_argument("--epochs", help="number of epochs", type=str)
+    parser.add_argument("--lr", help="learning rate", type=float)
+    parser.add_argument("--epochs", help="number of epochs", type=int)
     args = parser.parse_args()
 
     def classification_loss(y_1, y_2):

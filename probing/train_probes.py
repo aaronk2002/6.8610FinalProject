@@ -8,12 +8,12 @@ df = pd.read_csv("../dataset/maestro_new.csv")
 
 ### GET ARGUMENTS ###
 parser = argparse.ArgumentParser()
-parser.add_argument("--num_layers", help="number of decoder layers", type=str)
+parser.add_argument("--layers", help="number of decoder layers", type=str)
 parser.add_argument("--task", help="Task type (key, composer, control)", type=str)
-parser.add_argument("--lr", help = "Learning rate")
-parser.add_argument("--epochs", help = 'Epochs')
+parser.add_argument("--lr", help="Learning rate", type=float)
+parser.add_argument("--epochs", help="Epochs", type=int)
 args = parser.parse_args()
-task, num_layers = args.task, args.num_layers
+task, num_layers = args.task, args.layers
 EPOCHS, LR = args.epochs, args.lr
 print(f"num_layers = {num_layers} task = {task} ")
 
@@ -38,7 +38,7 @@ if task == "key":
         LR,
         EPOCHS,
     )
-    torch.save(key_model, f"key-{num_layers}.pth")
+    torch.save(key_model, f"key-{num_layers}-{args.lr}-{args.epochs}.pth")
 elif task == "composer":
     composer_model = probe_classifier(
         result["train_x"],
@@ -47,7 +47,7 @@ elif task == "composer":
         LR,
         EPOCHS,
     )
-    torch.save(composer_model, f"composer-{num_layers}.pth")
+    torch.save(composer_model, f"composer-{num_layers}-{args.lr}-{args.epochs}.pth")
 elif task == "control":
     control_model = probe_classifier(
         result["train_x"],
@@ -56,4 +56,4 @@ elif task == "control":
         LR,
         EPOCHS,
     )
-    torch.save(control_model, f"control-{num_layers}.pth")
+    torch.save(control_model, f"control-{num_layers}-{args.lr}-{args.epochs}.pth")
