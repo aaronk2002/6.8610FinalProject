@@ -1,7 +1,7 @@
 import torch
 import pandas as pd
 import argparse
-from probing import probe_classifier, probe_regressor
+from probing import probe_classifier
 
 # Dataframe
 df = pd.read_csv("../dataset/maestro_new.csv")
