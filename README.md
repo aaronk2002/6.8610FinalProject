@@ -47,6 +47,19 @@ To generate dataset for training the probe models, run the following in the prob
 $ python generate_probe_data.py --model {transformer model path} --save {dataset save path}
 ```
 
+A recommended way to do this is to rename your model paths to {number of decoder layers}.pth in the trained_model folder, training the models with 4, 6, and 8 layers, and run
+
+```bash
+$ sh bash_scripts/probe_generate.sh
+```
+
 
 
 ## Probe Training and Evaluation
+
+To train and evaluate the probes, choose first the model that you want to probe, and create the dataset using the previous step. Name the dataset {number of decoder layers in model}-layers-probe.pth and put it in the dataset folder. Then, run the following to train and evaluate probes
+
+```bash
+$ python probing/train_probes.py --layers {number of models in the transformer} --task {type of task: control, key, or composer} --lr {learning rate} --epochs {number of epochs}
+$ python probing/evaluate_probes.py --layers {number of models in the transformer} --task {type of task: control, key, or composer} --lr {learning rate} --epochs {number of epochs}
+```
