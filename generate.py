@@ -17,7 +17,7 @@ print(config.condition_file)
 
 
 # Load Model
-mt = torch.load("config/final.pth").to(config.device)
+mt = torch.load("trained_models/final.pth").to(config.device)
 mt.test()
 
 # Load initialization

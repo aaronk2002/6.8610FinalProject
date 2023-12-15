@@ -120,4 +120,4 @@ for e in range(config.epochs):
         idx += 1
 
 # Save Model
-torch.save(mt, args.model_dir + "/final.pth".format(idx))
+torch.save(mt, "trained_models/final.pth".format(idx))
