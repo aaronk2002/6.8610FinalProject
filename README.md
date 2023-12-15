@@ -13,20 +13,12 @@ $ mv midi-neural-processor midi_processor
 
 
 
-## Midi Download	
+## Dataset Acquisition
+
+Download the dataset from this [link](https://www.kaggle.com/datasets/kritanjalijain/maestropianomidi/) and put the downloaded folder in the dataset folder
 
 ```bash
-$ sh dataset/script/{ecomp_piano_downloader, midi_world_downloader, ...}.sh
-```
-
-* These shell files are from [performaceRNN re-built repository](https://github.com/djosix/Performance-RNN-PyTorch) implemented by [djosix](https://github.com/djosix)
-
-
-
-## Prepare Dataset	
-
-```bash
-$ python preprocess.py {midi_load_dir} {dataset_save_dir}
+$ sh bash_scripts/preprocess.sh
 ```
 
 
