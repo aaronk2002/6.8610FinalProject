@@ -13,7 +13,7 @@ task=composer
 # Train
 for layer in {4,6,8}
 do
-    python ../probing/train_probes.py --layers $layer --task $task --lr $lr --epochs $epochs
-    python ../probing/evaluate_probes.py --layers $layer --task $task --lr $lr --epochs $epochs
+    python probing/train_probes.py --layers $layer --task $task --lr $lr --epochs $epochs
+    python probing/evaluate_probes.py --layers $layer --task $task --lr $lr --epochs $epochs
     echo
 done

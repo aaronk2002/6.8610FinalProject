@@ -9,5 +9,5 @@ module load cuda/11.8
 for layer in {4,6,8}
 do
     echo $layer layers
-    python ../evaluation.py --layers $layer --N 100 --M 10
+    python evaluation.py --layers $layer --N 100 --M 10
 done
