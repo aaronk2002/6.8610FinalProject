@@ -10,5 +10,4 @@ data
 bin/
 result/
 model/
-logs/
 .dfc/
