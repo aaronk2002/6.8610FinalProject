@@ -57,7 +57,7 @@ $ sh bash_scripts/probe_generate.sh
 
 ## Probe Training and Evaluation
 
-To train and evaluate the probes, choose first the transformer model that you want to probe, and create the dataset using the previous step. Name the dataset {number of decoder layers in model}-layers-probe.pth and put it in the dataset folder. Then, run the following to train and evaluate probes
+To train and evaluate the probes, choose first the transformer model that you want to probe, and create the dataset using the previous step. Name the dataset {number of decoder layers in model}-layers-probe.pth and put it in the dataset folder. Then, run the following to train and evaluate probes in the probing folder
 
 ```bash
 $ python probing/train_probes.py --layers {number of models in the transformer} --task {type of task: control, key, or composer} --lr {learning rate} --epochs {number of epochs}
