@@ -25,48 +25,8 @@ $ sh bash_scripts/preprocess.sh
 
 ## Trainig
 
-```bash
-$ python train.py -c {config yml file 1} {config yml file 2} ... -m {model_dir}
-```
-
-
-
-## Hyper Parameter
-
-* learning rate : 0.0001
-* head size : 4
-* number of layers : 6
-* seqence length : 2048
-* embedding dim : 256 (dh = 256 / 4 = 64)
-* batch size : 2
-
-
-
-## Result
-
--  Baseline Transformer ( Green, Gray Color ) vs Music Transformer ( Blue, Red Color )
-
-* Loss
-
-  ![loss](readme_src/loss.svg)
-
-* Accuracy
-
-  ![accuracy](readme_src/accuracy.svg)
-
-
-
-## Generate Music
+To train the model and generate some music, run the following, which will train the transformer model and save it to the trained_models folder, and it will then generate music from that model. To change the hyperparameters used to train the model, change the values in config/addison.yml and config/save.yml (Addison is a pseudonym of Aaron).
 
 ```bash
-$ python generate.py -c {config yml file 1} {config yml file 2} -m {model_dir}
+$ sh bash_scripts/run.sh
 ```
-
-
-
-
-## Generated Samples ( Youtube Link )
-
-* click the image.
-
-  [<img src="readme_src/sample_meta.jpeg" width="400"/>](https://www.youtube.com/watch?v=n6pi7QJ6nvk&list=PLVopZAnUrGWrbIkLGB3bz5nitWThIueS2)
