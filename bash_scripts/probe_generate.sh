@@ -8,5 +8,5 @@ module load cuda/11.8
 # Generate probing tasks
 for idx in {4,6,8}
 do
-    python probing/generate_probe_data.py --model ../trained_models/$idx.pth --save ../dataset/$idx-layers-probe.pth
+    python generate_probe_data.py --model ../trained_models/$idx.pth --save ../dataset/$idx-layers-probe.pth
 done
