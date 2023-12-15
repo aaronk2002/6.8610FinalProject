@@ -1,45 +1,12 @@
-# Music Transformer: Generating Music with Long-Term Structure
+# Music Transformer Probing
 
-- 2019 ICLR, Cheng-Zhi Anna Huang, Google Brain
-- Re-producer : Yang-Kichang
-- [paper link](https://arxiv.org/abs/1809.04281) 
-- [paper review](https://github.com/SSUHan/PaparReviews/issues/13)
-
-
-
-## Abstract
-
-1. This Repository is perfectly cometible with **pytorch**
-
-
-
-## Contribution
-
-* Domain: Dramatically reduces the memory footprint, allowing it to scale to musical sequences on the order of minutes.
-* Algorithm: Reduced space complexity of Transformer from O(N^2D) to O(ND).
-
-
-
-## Preprocessing
-
-* In this repository using single track method (2nd method in paper.).
-
-* If you want to get implementation of method 1, see [here](https://github.com/COMP6248-Reproducability-Challenge/music-transformer-comp6248) .
-
-* ~~I refered preprocess code from [performaceRNN re-built repository.](https://github.com/djosix/Performance-RNN-PyTorch).~~
-
-* Preprocess implementation repository is [here](https://github.com/jason9693/midi-neural-processor).
-
-  
-  ![](https://user-images.githubusercontent.com/11185336/51083282-cddfc300-175a-11e9-9341-4a9042b17c19.png)
-
-
+This repository builds on top of the following [repository](https://github.com/jason9693/MusicTransformer-pytorch.git) by [jason9693](https://github.com/jason9693)
 
 ## Simple Start ( Repository Setting )
 
 ```bash
-$ git clone https://github.com/jason9693/MusicTransformer-pytorch.git
-$ cd MusicTransformer-pytorch
+$ git clone https://github.com/aaronk2002/6.8610FinalProject
+$ cd 6.8610FinalProject
 $ git clone https://github.com/jason9693/midi-neural-processor.git
 $ mv midi-neural-processor midi_processor
 ```
